@@ -34,7 +34,7 @@ public class StudentRestController {
 		return studentService.findStudentByRollNo(id);
 	}
 
-	@GetMapping("/")
+	@GetMapping("")
 	public List<Student> getAllStudends()
 	{
 		return studentService.findAllStudents();

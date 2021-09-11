@@ -27,7 +27,7 @@ public class Student {
 
 	@Id
 	@Column(name="roll_no")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int rollNo;
 
 	@Column(name = "name")
@@ -36,7 +36,7 @@ public class Student {
 	@Column(name = "class_name")
 	private String className;
 	
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.REMOVE})
 	@JoinTable(name = "student_subject_map",
 				joinColumns = @JoinColumn(name="roll_no"),
 				inverseJoinColumns = @JoinColumn(name = "subject_id"))

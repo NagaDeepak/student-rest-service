@@ -26,8 +26,7 @@ create table student_subject_map(
 
 	roll_no int,
 	subject_id int
-	
-	
+
 
 );
 

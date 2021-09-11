@@ -2,7 +2,6 @@ package com.onato.cruddemo.entity;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,12 +22,6 @@ public class Subject {
 	public Subject() {
 	}
 	
-	@Override
-	public String toString() {
-		return "Subject [subjectId=" + subjectId + ", subjectName=" + subjectName + ", marks=" + marks + ", students="
-				+ students + "]";
-	}
-
 	@Id
 	@Column(name = "subject_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -89,7 +82,11 @@ public class Subject {
 		this.students = students;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "Subject [subjectId=" + subjectId + ", subjectName=" + subjectName + ", marks=" + marks + ", students="
+				+ students + "]";
+	}
 	
 	
 }

@@ -22,66 +22,69 @@ public class StudentRestController {
 
 	@Autowired
 	private StudentService studentService;
+
+	@GetMapping("/count")
+	public long getCountOfStudents() {
+		return studentService.getCount();
+	}
 	
 	@GetMapping("/{id}")
 	public Student getStudentById(@PathVariable Integer id)
 	{
 		return studentService.findStudentByRollNo(id);
 	}
-	
+
 	@GetMapping("/")
 	public List<Student> getAllStudends()
 	{
 		return studentService.findAllStudents();
 	}
-	
+
 	@GetMapping("{id}/subjects")
 	public Map<String, Double> getSubjectsForStudent(@PathVariable Integer id)
 	{
 		return studentService.getSubjectsAndMarksByStudentId(id);
 	}
+	
 	@GetMapping("/aggregate/{percentage}")
 	public Map<String, String> getStudentsByAggreagatePercentage(@PathVariable Double percentage)
 	{
 		return studentService.getStudentsByAggregatePercentage(percentage);
 	}
-	
+
 	@GetMapping("/topScorers")
 	public List<String> getTopScorerOfEachSubject()
 	{
 		return studentService.getTopScorers();
 	}
-	@PostMapping("/")
-	public String saveStudent(@RequestBody Student student)
-	{
-		student.setRollNo(0);
-		int id = studentService.save(student);
-		return "Successfully saved student for id : " + id;
-	}
 	
-	@PutMapping("/")
-	public String updateStudent(@RequestBody Student student)
+	@PostMapping("")
+	public String saveStudents(@RequestBody List<Student> students)
 	{
-		int id = studentService.save(student);
-		return "Successfully updated student for id : " + id;
+		int count = studentService.saveAll(students);
+		return "Successfully saved " + count + " students";
 	}
-	
-	@DeleteMapping("/")
-	public String deleteStudents()
+
+	@PutMapping("")
+	public Student updateStudent(@RequestBody Student student)
 	{
-		studentService.deleteAll();
-		return "Successfully deleted all students";
+		return studentService.saveOrUpdateStudent(student);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public String deleteStudent(@PathVariable Integer id)
 	{
 		int sid = studentService.deleteStudent(id);
 		return "Successfully deleted student for id : " + sid;
 	}
-	
-	
-	
+
+	@DeleteMapping("")
+	public String deleteAllStudents()
+	{
+		studentService.deleteAll();
+		return "Successfully deleted all students";
+	}
+
 }
 
 

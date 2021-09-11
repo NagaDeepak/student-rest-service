@@ -15,9 +15,12 @@ import com.onato.cruddemo.entity.Subject;
 @Service
 public class StudentServiceImpl implements StudentService {
 
+	
+	private static final int bathSize = 1000;
+	
 	@Autowired
 	private StudentRepository studentRepository;
-	
+
 	@Override
 	public List<Student> findAllStudents() {
 		return studentRepository.findAll();
@@ -25,21 +28,33 @@ public class StudentServiceImpl implements StudentService {
 
 	@Override
 	public Student findStudentByRollNo(Integer theId) {
-		
+
 		Optional<Student> optional = studentRepository.findById(theId);
 		if(optional.isPresent())
 			return optional.get();
-		
+
+		//handled by global exceptional handler in com.onato.cruddemo.globalexceptions.GlobalExceptionHandler
 		throw new RuntimeException("Student not found for the id : " + theId);
 	}
 
 	@Override
-	public int save(Student student) {
-		studentRepository.save(student);
-		System.out.println(student);
-		return student.getRollNo();
-		
+	public int saveAll(List<Student> students) {
+		//Avoid overhead on db incase of more students and save the students based on the batch size.
+		int size = students.size();
+		int fromIndex = 0;
+		int toIndex = fromIndex+bathSize;
+
+		while(toIndex < size)
+		{
+			studentRepository.saveAll(students.subList(fromIndex, toIndex));
+			fromIndex = toIndex;
+			toIndex = fromIndex + bathSize;
+		}
+		if(fromIndex < size)
+			studentRepository.saveAll(students.subList(fromIndex, size));
+		return students.size();
 	}
+
 
 	@Override
 	public int deleteStudent(Integer rollNo) {
@@ -50,7 +65,7 @@ public class StudentServiceImpl implements StudentService {
 
 	@Override
 	public Map<String, Double> getSubjectsAndMarksByStudentId(Integer id) {
-		
+
 		Student student = findStudentByRollNo(id);
 		Map<String, Double> subjectToMarksMap = new HashMap<String, Double>();
 		for (Subject sub : student.getSubjects()) {
@@ -61,7 +76,7 @@ public class StudentServiceImpl implements StudentService {
 
 	@Override
 	public Map<String, String> getStudentsByAggregatePercentage(Double percentage) {
-		
+
 		Map<String, String> studentToAggregateMap = new HashMap<String, String>();
 		List<Object[]> list = studentRepository.getStudentsByAggregate(percentage);
 		for (Object[] objects : list) {
@@ -72,12 +87,14 @@ public class StudentServiceImpl implements StudentService {
 
 	@Override
 	public List<String> getTopScorers() {
-		
+
 		List<String> topScorersList = new ArrayList<>();
 		List<Object[]> list = studentRepository.getTopScorers();
-		
-		for (Object[] students : list) {
-			topScorersList.add("Student : " + students[0] + " Subject : " + students[1] + " marks : " + students[2]);
+
+		for (Object[] student : list) {
+			topScorersList.add("Student id : " + student[0] + ", Student name : " 
+		+ student[1] + ", Subject : " + student[2] + ", Marks : " + student[3]);
+			
 		}
 		return topScorersList;
 	}
@@ -87,7 +104,16 @@ public class StudentServiceImpl implements StudentService {
 		studentRepository.deleteAll();
 	}
 
-	
+	@Override
+	public Student saveOrUpdateStudent(Student student) {
+		return studentRepository.save(student);
+	}
+
+	@Override
+	public long getCount() {
+		return studentRepository.count();
+	}
+
 }
 
 

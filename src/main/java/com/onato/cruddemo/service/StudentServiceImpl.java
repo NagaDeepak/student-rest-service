@@ -16,7 +16,7 @@ import com.onato.cruddemo.entity.Subject;
 public class StudentServiceImpl implements StudentService {
 
 	
-	private static final int bathSize = 1000;
+	private static final int batchSize = 1000;
 	
 	@Autowired
 	private StudentRepository studentRepository;
@@ -42,13 +42,13 @@ public class StudentServiceImpl implements StudentService {
 		//Avoid overhead on db incase of more students and save the students based on the batch size.
 		int size = students.size();
 		int fromIndex = 0;
-		int toIndex = fromIndex+bathSize;
+		int toIndex = fromIndex+batchSize;
 
 		while(toIndex < size)
 		{
 			studentRepository.saveAll(students.subList(fromIndex, toIndex));
 			fromIndex = toIndex;
-			toIndex = fromIndex + bathSize;
+			toIndex = fromIndex + batchSize;
 		}
 		if(fromIndex < size)
 			studentRepository.saveAll(students.subList(fromIndex, size));
